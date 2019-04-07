@@ -19,11 +19,24 @@ let roleUpgrader = {
         }
         else {
             let sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            if(creep.harvest(sources[1]) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         }
-	}
+	},
+
+    body: [WORK,WORK,CARRY,MOVE,MOVE],
+
+    create: function(){
+        let upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
+        let minUpgraders = 4;
+        if(upgraders.length < minUpgraders) {
+            let newName = 'Upgrader' + Game.time;
+            console.log('Spawning new upgraders: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep(this.body, newName,
+                {memory: {role: 'upgrader'}});
+        }
+    }
 };
 
 module.exports = roleUpgrader;

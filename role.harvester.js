@@ -1,5 +1,3 @@
-let roleBuilder = require('role.builder');
-
 let roleHarvester = {
 
     /** @param {Creep} creep **/
@@ -22,11 +20,25 @@ let roleHarvester = {
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
-            } else{//if no place to put energy, work as builder
-                roleBuilder.run(creep);
-            }
+            } 
+            // else{//if no place to put energy, work as builder
+            //     roleBuilder.run(creep);
+            // }
       }
-	}
+	},
+    body: [WORK,WORK,CARRY,MOVE],
+
+    create: function(){
+        let minHarvesters = 6;
+        let harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester');
+        if (harvesters < minHarvesters){
+            let newName = 'Harvester' + Game.time;
+            console.log('Spawning new harvester: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep(this.body, newName,
+                {memory: {role: 'harvester'}});
+        }
+    }
+
 };
 
 module.exports = roleHarvester;
