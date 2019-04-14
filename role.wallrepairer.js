@@ -7,16 +7,16 @@ let roleRepairer = {
         if(creep.memory.repairing && creep.carry.energy === 0) {
             creep.memory.repairing = false;
             creep.say('🔄 harvest');
-	    }
-	    if(!creep.memory.repairing && creep.carry.energy === creep.carryCapacity) {
-	        creep.memory.repairing = true;
-	        creep.say('⚡ repair');
-	    }
+        }
+        if(!creep.memory.repairing && creep.carry.energy === creep.carryCapacity) {
+            creep.memory.repairing = true;
+            creep.say('⚡ repair');
+        }
 
 
-	    if(creep.memory.repairing) {//repair
+        if(creep.memory.repairing) {//repair
             let targets = creep.pos.findClosestByPath(FIND_STRUCTURES,{
-                filter: (s) =>  s.hits <= s.hitsMax * 0.75 && s.structureType !== STRUCTURE_WALL
+                filter: (s) =>  s.hits <= s.hitsMax * 0.75 && s.structureType === STRUCTURE_WALL
             });
 
             if(targets) {
@@ -24,12 +24,12 @@ let roleRepairer = {
                     creep.moveTo(targets, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
-             else{//if nothing needs repair
+            else{//if nothing needs repair
                 let storageTargets = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                      return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) &&
-                          structure.energy < structure.energyCapacity;
-                }
+                    filter: (structure) => {
+                        return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) &&
+                            structure.energy < structure.energyCapacity;
+                    }
                 });
                 if(storageTargets.length > 0) {
                     if(creep.transfer(storageTargets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
@@ -44,7 +44,7 @@ let roleRepairer = {
                 creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         }
-	},
+    },
 
     body: [WORK,CARRY,CARRY,MOVE],
 

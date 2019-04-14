@@ -6,6 +6,7 @@ module.exports = function () {
             builder: require("role.builder"),
             upgrader: require("role.upgrader"),
             repairer: require("role.repairer"),
+            miner: require("role.miner"),
         },
 
         numbers: {
@@ -13,6 +14,7 @@ module.exports = function () {
             upgrader: _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader').length,
             builder: _.filter(Game.creeps, (creep) => creep.memory.role === 'builder').length,
             repairer: _.filter(Game.creeps, (creep) => creep.memory.role === 'repairer').length,
+            miner: _.filter(Game.creeps, (creep) => creep.memory.role === 'miner').length,
         }
     };
 

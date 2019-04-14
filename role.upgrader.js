@@ -25,12 +25,11 @@ let roleUpgrader = {
         }
 	},
 
-    body: [WORK,WORK,CARRY,MOVE,MOVE],
+    body: [WORK,WORK,CARRY,CARRY,MOVE,MOVE],
 
     create: function(){
-        let upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         let minUpgraders = 4;
-        if(upgraders.length < minUpgraders) {
+        if(modules.numbers['upgrader'] < minUpgraders) {
             let newName = 'Upgrader' + Game.time;
             console.log('Spawning new upgraders: ' + newName);
             Game.spawns['Spawn1'].spawnCreep(this.body, newName,
