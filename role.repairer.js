@@ -3,7 +3,6 @@ let roleRepairer = {
     /** @param {Creep} creep **/
     run: function(creep) {
 
-        // if (creep.room.find())
         if(creep.memory.repairing && creep.carry.energy === 0) {
             creep.memory.repairing = false;
             creep.say('🔄 harvest');
@@ -24,7 +23,7 @@ let roleRepairer = {
                     creep.moveTo(targets, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
-             else{//if nothing needs repair
+             else{//if nothing needs repair, store energy at storageTargets
                 let storageTargets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                       return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN) &&
@@ -39,9 +38,18 @@ let roleRepairer = {
             }
         }
         else {//harvest
-            let sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[1]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
+            let containers = creep.room.find(FIND_STRUCTURES, {
+                filter: structure => structure.structureType === STRUCTURE_CONTAINER
+            });
+            if (containers.length > 0 && containers[0].store[RESOURCE_ENERGY] > 0){//collect from containers
+                if(creep.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(containers[0]);
+                }
+            } else{//harvest from energy sources
+                let sources = creep.room.find(FIND_SOURCES);
+                if(creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(sources[0],{visualizePathStyle: {stroke: '#ffaa00'}});
+                }
             }
         }
 	},

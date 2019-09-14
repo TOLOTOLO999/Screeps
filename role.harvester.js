@@ -2,36 +2,49 @@ let roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-	    if(creep.carry.energy < creep.carryCapacity) {//harvest
-            let containers = creep.room.find(FIND_STRUCTURES, {
-                filter: structure => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 0
-            });
-            if (containers.length > 0){
-                if(creep.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(containers[0]);
+
+        let containers = creep.room.find(FIND_STRUCTURES, {
+            filter: structure => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 0
+        });
+        let sources = creep.room.find(FIND_SOURCES);
+        let targets = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) =>
+                structure.energy < structure.energyCapacity && (structure.structureType === STRUCTURE_SPAWN || structure.structureType === STRUCTURE_EXTENSION)
+        });
+        let storages = creep.room.find(FIND_STRUCTURES,
+            {filter: s => s.structureType === STRUCTURE_STORAGE});
+
+
+
+        if(creep.carry.energy < creep.carryCapacity) {//harvest
+            console.log(0.5 * (creep.room.energyCapacityAvailable - storages[0].storeCapacity));
+            if(creep.room.energyAvailable < 0.5 * creep.room.energyCapacityAvailable && storages[0].store[RESOURCE_ENERGY] > 0.5 * creep.room.energyCapacityAvailable){
+                //transfer energy from storage to spawn and extensions
+                if(creep.withdraw(storages[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storages[0],{visualizePathStyle: {stroke: '#ffaa00'}});
                 }
             } else{
-                let sources = creep.room.find(FIND_SOURCES);
-                if(creep.harvest(sources[1]) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[1]);
+                if(containers.length > 0){//if there are containers available, go to containers
+                    if(creep.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(containers[0]);
+                    }
+                } else{//if no containers available, go to sources
+                    if(creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(sources[0],{visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
                 }
             }
         }
         else {//storing
-            let targets = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_EXTENSION || structure.structureType === STRUCTURE_SPAWN || structure.structureType === STRUCTURE_TOWER) &&
-                        structure.energy < structure.energyCapacity;
-                }
-            });
-            if(targets.length > 0) {
+            if(targets.length > 0) {//transfer to targets
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
+            } else{//transfer to storage
+                if(creep.transfer(storages[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storages[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                }
             }
-            // else{//if no place to put energy, work as builder
-            //     roleBuilder.run(creep);
-            // }
       }
 	},
     body: [CARRY,CARRY,MOVE],
